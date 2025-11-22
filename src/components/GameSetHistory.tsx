@@ -17,7 +17,7 @@ export const GameSetHistory = ({ gameSets, onReset, onRemoveSet }: GameSetHistor
   if (gameSets.length === 0) {
     return (
       <Card>
-        <CardContent className="pt-6">
+        <CardContent>
           <p className="text-center text-muted-foreground">
             아직 기록된 게임 세트가 없습니다.
           </p>

@@ -20,7 +20,7 @@ export const ChampSelectDisplay = ({
   if (!session) {
     return (
       <Card className="w-full">
-        <CardContent className="pt-6">
+        <CardContent>
           <p className="text-center text-muted-foreground">
             챔피언 선택 단계가 아닙니다.
           </p>

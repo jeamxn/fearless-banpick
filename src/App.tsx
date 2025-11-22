@@ -200,12 +200,23 @@ export function App() {
         )}
 
         {/* 챔피언 선택 데이터 표시 */}
-        {peerId && (
+        {peerId && lastSessionState !== "finalized" && (
           <ChampSelectDisplay 
             session={displayData}
             fearlessMode={fearlessMode}
             restrictedChampions={restrictedChampions}
           />
+        )}
+
+        {/* Finalization 후 대기 메시지 */}
+        {peerId && lastSessionState === "finalized" && (
+          <Card>
+            <CardContent>
+              <p className="text-center text-muted-foreground">
+                🎮 게임이 시작되었습니다. 다음 세트를 기다리는 중...
+              </p>
+            </CardContent>
+          </Card>
         )}
 
         {/* 사용 안내 */}
