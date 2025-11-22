@@ -18,7 +18,7 @@ export const useLeagueClient = () => {
 
       ws.onopen = () => {
         console.log("✅ 서버 연결 성공!");
-        // 리그 클라이언트 연결 요청
+        // 리그오브레전드 클라이언트 연결 요청
         ws.send(
           JSON.stringify({
             type: "connect-league",

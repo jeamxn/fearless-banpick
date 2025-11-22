@@ -6,7 +6,7 @@ import type { ChampSelectSession } from "./types/champSelect";
 // 자체 서명된 인증서 허용
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-// 리그 클라이언트 서비스 인스턴스
+// 리그오브레전드 클라이언트 서비스 인스턴스
 const leagueService = new LeagueClientService();
 
 // WebSocket과 구독 해제 함수를 매핑
@@ -39,8 +39,8 @@ const server = serve({
         return Response.json({
           success,
           message: success
-            ? "리그 클라이언트에 연결되었습니다."
-            : "리그 클라이언트를 찾을 수 없습니다.",
+            ? "리그오브레전드 클라이언트에 연결되었습니다."
+            : "리그오브레전드 클라이언트를 찾을 수 없습니다.",
         });
       },
     },
@@ -58,7 +58,7 @@ const server = serve({
     open(ws) {
       console.log("WebSocket 클라이언트 연결됨");
 
-      // 리그 클라이언트 데이터 구독
+      // 리그오브레전드 클라이언트 데이터 구독
       const unsubscribe = leagueService.subscribe((data: ChampSelectSession | null) => {
         try {
           ws.send(
@@ -88,8 +88,8 @@ const server = serve({
                 type: "league-connection-status",
                 success,
                 message: success
-                  ? "리그 클라이언트에 연결되었습니다."
-                  : "리그 클라이언트를 찾을 수 없습니다.",
+                  ? "리그오브레전드 클라이언트에 연결되었습니다."
+                  : "리그오브레전드 클라이언트를 찾을 수 없습니다.",
               })
             );
           });

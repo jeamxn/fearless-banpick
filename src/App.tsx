@@ -55,7 +55,7 @@ export function App() {
     removeGameSet,
   } = useFearless(roomId); // roomId를 사용 (호스트와 게스트 모두 동일)
 
-  // 호스트인 경우: 서버로부터 받은 리그 클라이언트 데이터를 P2P로 브로드캐스트
+  // 호스트인 경우: 서버로부터 받은 리그오브레전드 클라이언트 데이터를 P2P로 브로드캐스트
   useEffect(() => {
     if (isHost && champSelectData !== undefined) {
       broadcastData(champSelectData);
@@ -103,7 +103,7 @@ export function App() {
   // 방 만들기 핸들러 (호스트)
   const handleCreateRoom = async () => {
     createRoom();
-    // 방을 만들면 자동으로 서버의 리그 클라이언트 연결 시도
+    // 방을 만들면 자동으로 서버의 리그오브레전드 클라이언트 연결 시도
     await connectToLeague();
   };
 
@@ -183,7 +183,7 @@ export function App() {
                       isLeagueConnected ? "bg-green-500 animate-pulse" : "bg-gray-400"
                     }`} />
                     <span className="text-sm font-medium text-gray-900">
-                      리그 클라이언트
+                      리그오브레전드 클라이언트
                     </span>
                   </div>
                   <span className={`text-xs font-semibold ${
@@ -198,7 +198,7 @@ export function App() {
                     onClick={connectToLeague} 
                     className="w-full bg-gray-900 hover:bg-gray-800 text-white rounded-xl h-10 font-semibold"
                   >
-                    리그 클라이언트 연결
+                    리그오브레전드 클라이언트 연결
                   </Button>
                 )}
                 

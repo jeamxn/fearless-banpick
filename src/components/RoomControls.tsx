@@ -81,7 +81,7 @@ export const RoomControls = ({
           <div>
             <Label className="text-sm font-semibold text-gray-900">방 만들기</Label>
             <p className="text-xs text-gray-500 mt-1 wrap-break-word">
-              리그 실행 중인 PC에서 생성
+              리그오브레전드 클라이언트 실행 중인 PC에서 생성
             </p>
           </div>
           <Button
