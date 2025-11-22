@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 interface RoomControlsProps {
   onCreateRoom: () => void;
   onJoinRoom: (roomId: string) => void;
-  peerId: string | null;
+  roomId: string | null;
   isConnecting: boolean;
   error: string | null;
 }
@@ -15,7 +15,7 @@ interface RoomControlsProps {
 export const RoomControls = ({
   onCreateRoom,
   onJoinRoom,
-  peerId,
+  roomId,
   isConnecting,
   error,
 }: RoomControlsProps) => {
@@ -28,13 +28,13 @@ export const RoomControls = ({
   };
 
   const handleCopyRoomId = () => {
-    if (peerId) {
-      navigator.clipboard.writeText(peerId);
+    if (roomId) {
+      navigator.clipboard.writeText(roomId);
       alert("방 코드가 복사되었습니다!");
     }
   };
 
-  if (peerId) {
+  if (roomId) {
     return (
       <Card className="w-full">
         <CardHeader>
@@ -45,7 +45,7 @@ export const RoomControls = ({
           <div className="space-y-4">
             <div className="flex gap-2">
               <Input
-                value={peerId}
+                value={roomId}
                 readOnly
                 className="font-mono text-lg font-bold"
               />

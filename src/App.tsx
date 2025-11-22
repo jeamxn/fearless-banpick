@@ -33,6 +33,7 @@ export function App() {
 
   const {
     peerId,
+    roomId,
     isHost,
     connections,
     receivedData,
@@ -51,7 +52,7 @@ export function App() {
     isSessionComplete,
     reset: resetFearless,
     removeGameSet,
-  } = useFearless(peerId);
+  } = useFearless(roomId); // roomId를 사용 (호스트와 게스트 모두 동일)
 
   // 호스트인 경우: 서버로부터 받은 리그 클라이언트 데이터를 P2P로 브로드캐스트
   useEffect(() => {
@@ -133,13 +134,13 @@ export function App() {
         <RoomControls
           onCreateRoom={handleCreateRoom}
           onJoinRoom={joinRoom}
-          peerId={peerId}
+          roomId={roomId}
           isConnecting={isConnecting}
           error={peerError}
         />
 
         {/* 연결 상태 표시 */}
-        {peerId && (
+        {roomId && (
           <Card>
             <CardContent>
               <div className="space-y-3">
@@ -182,7 +183,7 @@ export function App() {
         )}
 
         {/* 피어리스 모드 선택 */}
-        {peerId && isHost && (
+        {roomId && isHost && (
           <FearlessModeSelector
             currentMode={fearlessMode}
             onModeChange={setFearlessMode}
@@ -191,7 +192,7 @@ export function App() {
         )}
 
         {/* 게임 세트 기록 */}
-        {peerId && gameSets.length > 0 && (
+        {roomId && gameSets.length > 0 && (
           <GameSetHistory
             gameSets={gameSets}
             onReset={resetFearless}
@@ -200,7 +201,7 @@ export function App() {
         )}
 
         {/* 챔피언 선택 데이터 표시 */}
-        {peerId && lastSessionState !== "finalized" && (
+        {roomId && lastSessionState !== "finalized" && (
           <ChampSelectDisplay 
             session={displayData}
             fearlessMode={fearlessMode}
@@ -209,7 +210,7 @@ export function App() {
         )}
 
         {/* Finalization 후 대기 메시지 */}
-        {peerId && lastSessionState === "finalized" && (
+        {roomId && lastSessionState === "finalized" && (
           <Card>
             <CardContent>
               <p className="text-center text-muted-foreground">
@@ -220,7 +221,7 @@ export function App() {
         )}
 
         {/* 사용 안내 */}
-        {!peerId && (
+        {!roomId && (
           <Card>
             <CardHeader>
               <CardTitle>💡 사용 방법</CardTitle>

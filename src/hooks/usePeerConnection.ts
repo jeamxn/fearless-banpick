@@ -10,6 +10,7 @@ type PeerMessage = {
 export const usePeerConnection = () => {
   const [peer, setPeer] = useState<Peer | null>(null);
   const [peerId, setPeerId] = useState<string | null>(null);
+  const [roomId, setRoomId] = useState<string | null>(null); // 공유할 방 코드
   const [isHost, setIsHost] = useState(false);
   const [connections, setConnections] = useState<DataConnection[]>([]);
   const [receivedData, setReceivedData] = useState<ChampSelectSession | null>(null);
@@ -96,21 +97,23 @@ export const usePeerConnection = () => {
   const createRoom = useCallback(() => {
     setIsConnecting(true);
     setIsHost(true);
-    const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
-    initializePeer(roomId);
+    const newRoomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+    setRoomId(newRoomId); // 방 코드 저장
+    initializePeer(newRoomId);
   }, [initializePeer]);
 
   // 방 참가하기 (게스트)
   const joinRoom = useCallback(
-    (roomId: string) => {
+    (hostRoomId: string) => {
       setIsConnecting(true);
       setIsHost(false);
+      setRoomId(hostRoomId); // 호스트의 방 코드를 공유 ID로 사용
       const newPeer = initializePeer();
 
       if (newPeer) {
         newPeer.on("open", () => {
-          console.log("방에 연결 중:", roomId);
-          const conn = newPeer.connect(roomId, {
+          console.log("방에 연결 중:", hostRoomId);
+          const conn = newPeer.connect(hostRoomId, {
             reliable: true,
           });
           setupConnection(conn);
@@ -149,6 +152,7 @@ export const usePeerConnection = () => {
 
   return {
     peerId,
+    roomId, // 공유할 방 코드 (호스트와 게스트 모두 동일)
     isHost,
     connections,
     receivedData,
