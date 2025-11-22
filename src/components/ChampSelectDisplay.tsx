@@ -31,17 +31,76 @@ export const ChampSelectDisplay = ({
 
   if (!session) {
     return (
-      <Card className="w-full">
-        <CardContent>
-          <p className="text-center text-muted-foreground">
-            챔피언 선택 단계가 아닙니다.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="bg-white rounded-2xl p-12 shadow-sm border border-gray-100 text-center">
+        <div className="text-6xl mb-4">⏸️</div>
+        <p className="text-lg font-semibold text-gray-900 mb-2">
+          챔피언 선택 단계가 아닙니다
+        </p>
+        <p className="text-sm text-gray-600">
+          챔피언 선택이 시작되면 자동으로 표시됩니다
+        </p>
+      </div>
     );
   }
 
   console.log("ChampSelect 세션 데이터:", session);
+
+  // phase가 없거나 비어있으면 대기중으로 간주
+  const phase = session.timer.phase?.toLowerCase() || "";
+  if (!phase || phase === "" || phase === "none") {
+    return (
+      <div className="bg-white rounded-2xl p-12 shadow-sm border border-gray-100 text-center">
+        <div className="text-6xl mb-4">⏸️</div>
+        <p className="text-lg font-semibold text-gray-900 mb-2">
+          대기 중
+        </p>
+        <p className="text-sm text-gray-600">
+          챔피언 선택이 시작되면 자동으로 표시됩니다
+        </p>
+      </div>
+    );
+  }
+
+  // 우리 팀 밴 추출
+  const getMyTeamBans = () => {
+    const bans: Array<{ id: number; status: "completed" | "inProgress" }> = [];
+    for (const actionGroup of session.actions) {
+      for (const action of actionGroup) {
+        if (action.type === "ban" && action.isAllyAction) {
+          let status: "completed" | "inProgress" = "completed";
+          if (action.isInProgress) {
+            status = "inProgress";
+          }
+          if (status === "inProgress" || (action.completed && action.championId !== 0)) {
+            bans.push({ id: action.championId || 0, status });
+          }
+        }
+      }
+    }
+    return bans;
+  };
+
+  // 상대 팀 밴 추출
+  const getTheirTeamBans = () => {
+    const bans: Array<{ id: number; status: "completed" | "inProgress" }> = [];
+    for (const actionGroup of session.actions) {
+      for (const action of actionGroup) {
+        if (action.type === "ban" && !action.isAllyAction) {
+          let status: "completed" | "inProgress" = "completed";
+          if (action.isInProgress) {
+            status = "inProgress";
+          }
+          if (status === "inProgress" || (action.completed && action.championId !== 0)) {
+            bans.push({ id: action.championId || 0, status });
+          }
+        }
+      }
+    }
+    return bans;
+  };
+
+  const myTeamBans = getMyTeamBans();
+  const theirTeamBans = getTheirTeamBans();
 
   // 실시간 남은 시간 계산
   const calculateRemainingTime = () => {
@@ -59,40 +118,6 @@ export const ChampSelectDisplay = ({
   };
 
   const { seconds: remainingSeconds, percentage: timePercentage } = calculateRemainingTime();
-
-  // 밴 정보 추출
-  const myTeamBans: Array<{ id: number; status: "completed" | "inProgress" | "pending" }> = [];
-  const theirTeamBans: Array<{ id: number; status: "completed" | "inProgress" | "pending" }> = [];
-
-  for (const actionGroup of session.actions) {
-    for (const action of actionGroup) {
-      if (action.type === "ban") {
-        let status: "completed" | "inProgress" | "pending" = "pending";
-        
-        if (action.completed && action.championId !== 0) {
-          status = "completed";
-        } else if (action.isInProgress) {
-          status = "inProgress";
-        } else if (!action.completed) {
-          status = "pending";
-        }
-
-        // completed이거나 inProgress인 경우에만 표시
-        if (status !== "pending" || action.championId !== 0) {
-          const banData = {
-            id: action.championId || 0,
-            status,
-          };
-
-          if (action.isAllyAction) {
-            myTeamBans.push(banData);
-          } else {
-            theirTeamBans.push(banData);
-          }
-        }
-      }
-    }
-  }
 
   // 현재 진행 중인 액션
   const currentActions: Array<{ team: string; type: string }> = [];
@@ -135,7 +160,9 @@ export const ChampSelectDisplay = ({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="font-semibold">현재 단계:</span>
-              <span className="text-muted-foreground">{session.timer.phase}</span>
+              <span className="text-muted-foreground">
+                {session.timer.phase}
+              </span>
             </div>
             
             {/* 프로그레스 바 */}
@@ -176,125 +203,63 @@ export const ChampSelectDisplay = ({
         </div>
       </div>
 
-      {/* 밴 정보 */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <h3 className="text-lg font-bold text-gray-900 mb-4">🚫 밴</h3>
-        <div>
-          <div className="space-y-3">
-            <div>
-              <p className="font-semibold text-blue-600 mb-2">우리 팀</p>
-              <div className="flex flex-wrap gap-3">
-                {myTeamBans.length > 0 ? (
-                  myTeamBans.map((ban, idx) => {
-                    const getBanStyle = () => {
-                      if (ban.status === "completed") {
-                        return "relative rounded-lg overflow-hidden border-2 border-blue-500";
-                      } else if (ban.status === "inProgress") {
-                        return "relative rounded-lg overflow-hidden border-2 border-blue-400 animate-pulse";
-                      }
-                      return "relative rounded-lg overflow-hidden border-2 border-gray-300";
-                    };
-
-                    const showImage = ban.id !== 0;
-
-                    return (
-                      <div key={idx} className={getBanStyle()}>
-                        {showImage ? (
-                          <div className="relative w-16 h-16">
-                            <img
-                              src={getChampionIconUrl(ban.id)}
-                              alt={getChampionName(ban.id)}
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src =
-                                  "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/profileicon/29.png";
-                              }}
-                            />
-                            {ban.status === "inProgress" && (
-                              <div className="absolute inset-0 bg-blue-500/30 flex items-center justify-center">
-                                <span className="text-white text-xs font-bold">예정</span>
-                              </div>
-                            )}
-                            {ban.status === "completed" && (
-                              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                                <span className="text-white text-2xl font-bold">✕</span>
-                              </div>
-                            )}
-                          </div>
-                        ) : (
-                          <div className="w-16 h-16 bg-gray-200 flex items-center justify-center">
-                            <span className="text-xs text-gray-500">선택 중</span>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })
-                ) : (
-                  <span className="text-muted-foreground text-sm">없음</span>
-                )}
-              </div>
-            </div>
-            <div>
-              <p className="font-semibold text-red-600 mb-2">상대 팀</p>
-              <div className="flex flex-wrap gap-3">
-                {theirTeamBans.length > 0 ? (
-                  theirTeamBans.map((ban, idx) => {
-                    const getBanStyle = () => {
-                      if (ban.status === "completed") {
-                        return "relative rounded-lg overflow-hidden border-2 border-red-500";
-                      } else if (ban.status === "inProgress") {
-                        return "relative rounded-lg overflow-hidden border-2 border-red-400 animate-pulse";
-                      }
-                      return "relative rounded-lg overflow-hidden border-2 border-gray-300";
-                    };
-
-                    const showImage = ban.id !== 0;
-
-                    return (
-                      <div key={idx} className={getBanStyle()}>
-                        {showImage ? (
-                          <div className="relative w-16 h-16">
-                            <img
-                              src={getChampionIconUrl(ban.id)}
-                              alt={getChampionName(ban.id)}
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src =
-                                  "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/profileicon/29.png";
-                              }}
-                            />
-                            {ban.status === "inProgress" && (
-                              <div className="absolute inset-0 bg-red-500/30 flex items-center justify-center">
-                                <span className="text-white text-xs font-bold">예정</span>
-                              </div>
-                            )}
-                            {ban.status === "completed" && (
-                              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                                <span className="text-white text-2xl font-bold">✕</span>
-                              </div>
-                            )}
-                          </div>
-                        ) : (
-                          <div className="w-16 h-16 bg-gray-200 flex items-center justify-center">
-                            <span className="text-xs text-gray-500">선택 중</span>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })
-                ) : (
-                  <span className="text-muted-foreground text-sm">없음</span>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* 우리 팀 */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
         <h3 className="text-lg font-bold text-blue-600 mb-4">👥 우리 팀</h3>
+        
+        {/* 우리 팀 밴 */}
+        {myTeamBans.length > 0 && (
+          <div className="mb-4">
+            <p className="text-sm font-semibold text-gray-700 mb-2">🚫 밴</p>
+            <div className="flex flex-wrap gap-2">
+              {myTeamBans.map((ban, idx) => {
+                const showImage = ban.id !== 0;
+                return (
+                  <div
+                    key={idx}
+                    className={`relative rounded-lg overflow-hidden border-2 ${
+                      ban.status === "completed"
+                        ? "border-red-500"
+                        : "border-red-400 animate-pulse"
+                    }`}
+                  >
+                    {showImage ? (
+                      <div className="relative w-12 h-12">
+                        <img
+                          src={getChampionIconUrl(ban.id)}
+                          alt={getChampionName(ban.id)}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/profileicon/29.png";
+                          }}
+                        />
+                        {ban.status === "inProgress" && (
+                          <div className="absolute inset-0 bg-red-500/30 flex items-center justify-center">
+                            <span className="text-white text-[10px] font-bold">예정</span>
+                          </div>
+                        )}
+                        {ban.status === "completed" && (
+                          <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                            <span className="text-white text-xl font-bold">✕</span>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="w-12 h-12 bg-gray-200 flex items-center justify-center">
+                        <span className="text-[10px] text-gray-500">선택중</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* 우리 팀 픽 */}
         <div>
+          <p className="text-sm font-semibold text-gray-700 mb-2">✅ 픽</p>
           <div className="space-y-3">
             {session.myTeam.map((player) => {
               const isLocalPlayer = player.cellId === session.localPlayerCellId;
@@ -352,7 +317,7 @@ export const ChampSelectDisplay = ({
                           isIntentRestricted ? "bg-red-500/40" : "bg-blue-500/20"
                         } flex items-center justify-center`}>
                           <span className="text-white text-xs font-bold">
-                            {isIntentRestricted ? "제한" : "의도"}
+                            {isIntentRestricted ? "제한" : "예정"}
                           </span>
                         </div>
                       </div>
@@ -377,7 +342,7 @@ export const ChampSelectDisplay = ({
                       ) : hasIntent ? (
                         <span className={`text-muted-foreground ${isIntentRestricted ? "text-red-600" : ""}`}>
                           {getChampionName(player.championPickIntent)} 
-                          {isIntentRestricted ? " (제한)" : " (의도)"}
+                          {isIntentRestricted ? "(제한)" : "(예정)"}
                         </span>
                       ) : (
                         <span className="text-muted-foreground">선택 안 함</span>
@@ -394,7 +359,60 @@ export const ChampSelectDisplay = ({
       {/* 상대 팀 */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
         <h3 className="text-lg font-bold text-red-600 mb-4">👥 상대 팀</h3>
+        
+        {/* 상대 팀 밴 */}
+        {theirTeamBans.length > 0 && (
+          <div className="mb-4">
+            <p className="text-sm font-semibold text-gray-700 mb-2">🚫 밴</p>
+            <div className="flex flex-wrap gap-2">
+              {theirTeamBans.map((ban, idx) => {
+                const showImage = ban.id !== 0;
+                return (
+                  <div
+                    key={idx}
+                    className={`relative rounded-lg overflow-hidden border-2 ${
+                      ban.status === "completed"
+                        ? "border-red-500"
+                        : "border-red-400 animate-pulse"
+                    }`}
+                  >
+                    {showImage ? (
+                      <div className="relative w-12 h-12">
+                        <img
+                          src={getChampionIconUrl(ban.id)}
+                          alt={getChampionName(ban.id)}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/profileicon/29.png";
+                          }}
+                        />
+                        {ban.status === "inProgress" && (
+                          <div className="absolute inset-0 bg-red-500/30 flex items-center justify-center">
+                            <span className="text-white text-[10px] font-bold">예정</span>
+                          </div>
+                        )}
+                        {ban.status === "completed" && (
+                          <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                            <span className="text-white text-xl font-bold">✕</span>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="w-12 h-12 bg-gray-200 flex items-center justify-center">
+                        <span className="text-[10px] text-gray-500">선택중</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* 상대 팀 픽 */}
         <div>
+          <p className="text-sm font-semibold text-gray-700 mb-2">✅ 픽</p>
           <div className="space-y-3">
             {session.theirTeam.map((player) => {
               const hasPicked = player.championId !== 0;

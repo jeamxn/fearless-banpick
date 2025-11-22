@@ -137,7 +137,7 @@ export const GameSetHistory = ({ gameSets, onReset, onRemoveSet }: GameSetHistor
                               alt={getChampionName(championId)}
                               className="w-full h-full object-cover"
                             />
-                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                            <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
                               <span className="text-white text-xs font-bold">✕</span>
                             </div>
                           </div>
@@ -164,7 +164,7 @@ export const GameSetHistory = ({ gameSets, onReset, onRemoveSet }: GameSetHistor
                               alt={getChampionName(championId)}
                               className="w-full h-full object-cover"
                             />
-                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                            <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
                               <span className="text-white text-xs font-bold">✕</span>
                             </div>
                           </div>
