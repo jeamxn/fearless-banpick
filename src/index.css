@@ -3,24 +3,40 @@
 @layer base {
   :root {
     @apply font-sans;
+    /* 토스 스타일 폰트 */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
 
   body {
-    @apply grid place-items-center min-w-[320px] min-h-screen relative m-0 bg-background text-foreground;
+    @apply min-w-[320px] min-h-screen relative m-0 bg-gray-50 text-gray-900;
+    /* 부드러운 스크롤 */
+    scroll-behavior: smooth;
+    /* 안티앨리어싱 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* 토스 스타일 버튼 애니메이션 */
+  button {
+    @apply transition-all duration-200;
+  }
+  
+  button:active {
+    @apply scale-95;
+  }
+  
+  /* 토스 스타일 인풋 */
+  input:focus {
+    @apply outline-none ring-2 ring-blue-500 ring-opacity-50;
   }
 }
 
-/* cool Bun background animation 😎 */
+/* 토스 스타일 미묘한 배경 패턴 */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
-  opacity: 0.05;
-  background: url("./logo.svg");
-  background-size: 256px;
-  transform: rotate(-15deg) scale(1.35);
-  animation: slide 30s linear infinite;
   pointer-events: none;
 }
 

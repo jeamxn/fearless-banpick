@@ -32,50 +32,50 @@ export const FearlessModeSelector = ({
   ];
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>⚔️ 피어리스 모드</CardTitle>
-        <CardDescription>
-          게임 세트 간 챔피언 선택 제한 규칙을 설정하세요
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {modes.map((mode) => (
-            <Button
-              key={mode.value}
-              variant={currentMode === mode.value ? "default" : "outline"}
-              className={`h-auto flex flex-col items-start p-4 ${
-                currentMode === mode.value ? "ring-2 ring-blue-500" : ""
-              }`}
-              onClick={() => onModeChange(mode.value)}
-              disabled={disabled}
-            >
-              <span className="font-bold text-base mb-1">{mode.label}</span>
-              <span className="text-xs text-left opacity-80 font-normal">
-                {mode.description}
-              </span>
-            </Button>
-          ))}
-        </div>
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <h2 className="text-lg font-bold text-gray-900 mb-2">⚔️ 피어리스 모드</h2>
+      <p className="text-sm text-gray-600 mb-4">
+        게임 세트 간 챔피언 선택 제한 규칙
+      </p>
+      
+      <div className="grid grid-cols-1 gap-3">
+        {modes.map((mode) => (
+          <button
+            key={mode.value}
+            onClick={() => onModeChange(mode.value)}
+            disabled={disabled}
+            className={`p-4 rounded-xl text-left transition-all border-2 ${
+              currentMode === mode.value
+                ? "border-blue-500 bg-blue-50"
+                : "border-gray-200 bg-white hover:border-gray-300"
+            }`}
+          >
+            <div className="font-bold text-sm text-gray-900 mb-1">
+              {mode.label}
+            </div>
+            <div className="text-xs text-gray-600 wrap-break-word">
+              {mode.description}
+            </div>
+          </button>
+        ))}
+      </div>
 
-        {/* 모드 설명 */}
-        <div className="mt-4 p-3 bg-muted rounded-lg text-sm space-y-2">
-          <p className="font-semibold">📖 모드 설명</p>
-          <ul className="space-y-1 text-muted-foreground">
-            <li>
-              <span className="font-semibold">논 피어리스:</span> 제한 없이 모든 챔피언 선택 가능
-            </li>
-            <li>
-              <span className="font-semibold">소프트 피어리스:</span> 자기 팀이 이전 세트에서 선택한 챔피언만 선택 불가
-            </li>
-            <li>
-              <span className="font-semibold">하드 피어리스:</span> 양 팀 중 누구라도 선택했던 챔피언은 모두 선택 불가
-            </li>
-          </ul>
-        </div>
-      </CardContent>
-    </Card>
+      {/* 모드 설명 */}
+      <div className="mt-4 p-4 bg-gray-50 rounded-xl">
+        <p className="font-semibold text-sm text-gray-900 mb-2">📖 상세 설명</p>
+        <ul className="space-y-2 text-xs text-gray-600">
+          <li className="wrap-break-word">
+            <span className="font-semibold text-gray-900">논 피어리스:</span> 제한 없음
+          </li>
+          <li className="wrap-break-word">
+            <span className="font-semibold text-gray-900">소프트:</span> 자기 팀 선택 챔피언만 제한
+          </li>
+          <li className="wrap-break-word">
+            <span className="font-semibold text-gray-900">하드:</span> 양 팀 모든 챔피언 제한
+          </li>
+        </ul>
+      </div>
+    </div>
   );
 };
 

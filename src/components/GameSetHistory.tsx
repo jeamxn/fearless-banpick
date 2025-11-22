@@ -16,13 +16,11 @@ export const GameSetHistory = ({ gameSets, onReset, onRemoveSet }: GameSetHistor
 
   if (gameSets.length === 0) {
     return (
-      <Card>
-        <CardContent>
-          <p className="text-center text-muted-foreground">
-            아직 기록된 게임 세트가 없습니다.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <p className="text-center text-gray-500 text-sm">
+          아직 기록된 게임 세트가 없습니다.
+        </p>
+      </div>
     );
   }
 
@@ -37,50 +35,50 @@ export const GameSetHistory = ({ gameSets, onReset, onRemoveSet }: GameSetHistor
   };
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>📊 게임 세트 기록</CardTitle>
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-bold text-gray-900">📊 게임 세트 기록</h3>
         <div>
           {showResetConfirm ? (
-            <div className="flex gap-2">
+            <div className="flex gap-2 shrink-0">
               <Button
-                variant="destructive"
                 size="sm"
                 onClick={handleReset}
+                className="bg-red-600 hover:bg-red-700 text-white rounded-lg h-8 px-3 text-xs"
               >
                 확인
               </Button>
               <Button
-                variant="outline"
                 size="sm"
                 onClick={() => setShowResetConfirm(false)}
+                className="bg-gray-200 hover:bg-gray-300 text-gray-900 rounded-lg h-8 px-3 text-xs"
               >
                 취소
               </Button>
             </div>
           ) : (
             <Button
-              variant="outline"
               size="sm"
               onClick={() => setShowResetConfirm(true)}
+              className="bg-gray-200 hover:bg-gray-300 text-gray-900 rounded-lg h-8 px-3 text-xs shrink-0"
             >
               초기화
             </Button>
           )}
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
+      </div>
+      
+      <div className="space-y-4 mt-4">
           {gameSets.map((gameSet) => (
             <div
               key={gameSet.id}
-              className="border rounded-lg p-4 space-y-3"
+              className="border border-gray-200 rounded-xl p-5 space-y-4 bg-gray-50"
             >
               {/* 세트 헤더 */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <h3 className="font-bold text-lg">세트 {gameSet.setNumber}</h3>
-                  <span className="text-sm text-muted-foreground">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <h3 className="font-bold text-base text-gray-900 shrink-0">세트 {gameSet.setNumber}</h3>
+                  <span className="text-xs text-gray-500 truncate">
                     {new Date(gameSet.timestamp).toLocaleString("ko-KR", {
                       month: "short",
                       day: "numeric",
@@ -91,28 +89,28 @@ export const GameSetHistory = ({ gameSets, onReset, onRemoveSet }: GameSetHistor
                 </div>
                 {/* 삭제 버튼 */}
                 {deleteConfirmId === gameSet.id ? (
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 shrink-0">
                     <Button
-                      variant="destructive"
                       size="sm"
                       onClick={() => handleRemoveSet(gameSet.id)}
+                      className="bg-red-600 hover:bg-red-700 text-white rounded-lg h-8 px-3 text-xs"
                     >
                       확인
                     </Button>
                     <Button
-                      variant="outline"
                       size="sm"
                       onClick={() => setDeleteConfirmId(null)}
+                      className="bg-gray-200 hover:bg-gray-300 text-gray-900 rounded-lg h-8 px-3 text-xs"
                     >
                       취소
                     </Button>
                   </div>
                 ) : (
                   <Button
-                    variant="ghost"
                     size="sm"
                     onClick={() => setDeleteConfirmId(gameSet.id)}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    className="text-red-600 hover:bg-red-50 rounded-lg h-8 px-3 text-xs shrink-0"
+                    variant="ghost"
                   >
                     삭제
                   </Button>
@@ -235,8 +233,7 @@ export const GameSetHistory = ({ gameSets, onReset, onRemoveSet }: GameSetHistor
             </div>
           ))}
         </div>
-      </CardContent>
-    </Card>
+    </div>
   );
 };
 

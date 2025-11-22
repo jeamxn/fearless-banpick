@@ -111,31 +111,27 @@ export const ChampSelectDisplay = ({
     <div className="w-full space-y-4">
       {/* 피어리스 모드 정보 */}
       {fearlessMode !== "none" && (restrictedChampions.myTeam.length > 0 || restrictedChampions.theirTeam.length > 0) && (
-        <Card className="border-orange-500 bg-orange-50">
-          <CardContent className="">
-            <div className="flex items-center gap-2 text-orange-800">
-              <span className="text-lg">⚠️</span>
-              <div className="flex-1">
-                <p className="font-semibold text-sm">
-                  {fearlessMode === "soft" ? "소프트 피어리스" : "하드 피어리스"} 활성화
-                </p>
-                <p className="text-xs">
-                  {fearlessMode === "soft" 
-                    ? "이전 세트에서 자기 팀이 선택한 챔피언은 선택할 수 없습니다."
-                    : "이전 세트에서 양 팀이 선택한 모든 챔피언은 선택할 수 없습니다."}
-                </p>
-              </div>
+        <div className="bg-orange-50 rounded-2xl p-4 border border-orange-200">
+          <div className="flex items-start gap-3">
+            <span className="text-xl shrink-0">⚠️</span>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-sm text-orange-900 mb-1">
+                {fearlessMode === "soft" ? "소프트 피어리스" : "하드 피어리스"} 활성화
+              </p>
+              <p className="text-xs text-orange-800 wrap-break-word">
+                {fearlessMode === "soft" 
+                  ? "자기 팀 선택 챔피언 제한"
+                  : "양 팀 모든 선택 챔피언 제한"}
+              </p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* 타이머 정보 */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl">⏱️ 타이머</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h3 className="text-lg font-bold text-gray-900 mb-4">⏱️ 타이머</h3>
+        <div>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="font-semibold">현재 단계:</span>
@@ -177,15 +173,13 @@ export const ChampSelectDisplay = ({
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* 밴 정보 */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl">🚫 밴</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h3 className="text-lg font-bold text-gray-900 mb-4">🚫 밴</h3>
+        <div>
           <div className="space-y-3">
             <div>
               <p className="font-semibold text-blue-600 mb-2">우리 팀</p>
@@ -294,15 +288,13 @@ export const ChampSelectDisplay = ({
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* 우리 팀 */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl text-blue-600">👥 우리 팀</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h3 className="text-lg font-bold text-blue-600 mb-4">👥 우리 팀</h3>
+        <div>
           <div className="space-y-3">
             {session.myTeam.map((player) => {
               const isLocalPlayer = player.cellId === session.localPlayerCellId;
@@ -396,15 +388,13 @@ export const ChampSelectDisplay = ({
               );
             })}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* 상대 팀 */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl text-red-600">👥 상대 팀</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h3 className="text-lg font-bold text-red-600 mb-4">👥 상대 팀</h3>
+        <div>
           <div className="space-y-3">
             {session.theirTeam.map((player) => {
               const hasPicked = player.championId !== 0;
@@ -460,16 +450,14 @@ export const ChampSelectDisplay = ({
               );
             })}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* 현재 액션 */}
       {currentActions.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl">🎯 현재 액션</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h3 className="text-lg font-bold text-gray-900 mb-4">🎯 현재 액션</h3>
+          <div>
             <div className="space-y-2">
               {currentActions.map((action, idx) => (
                 <div
@@ -481,8 +469,8 @@ export const ChampSelectDisplay = ({
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   );
