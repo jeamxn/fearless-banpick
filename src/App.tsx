@@ -3,13 +3,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { RoomControls } from "@/components/RoomControls";
 import { ChampSelectDisplay } from "@/components/ChampSelectDisplay";
+import { FearlessModeSelector } from "@/components/FearlessModeSelector";
+import { GameSetHistory } from "@/components/GameSetHistory";
 import { useLeagueClient } from "@/hooks/useLeagueClient";
 import { usePeerConnection } from "@/hooks/usePeerConnection";
+import { useFearless } from "@/hooks/useFearless";
+import { getRestrictedChampions } from "@/types/fearless";
 import { initializeChampionData } from "@/utils/championData";
 import "./index.css";
 
 export function App() {
   const [isChampionDataLoaded, setIsChampionDataLoaded] = useState(false);
+  const [lastSessionState, setLastSessionState] = useState<"active" | "completed" | "finalized" | null>(null);
+  const [completedSessionData, setCompletedSessionData] = useState<any>(null);
 
   // 챔피언 데이터 초기화
   useEffect(() => {
@@ -37,12 +43,59 @@ export function App() {
     broadcastData,
   } = usePeerConnection();
 
+  const {
+    mode: fearlessMode,
+    gameSets,
+    setMode: setFearlessMode,
+    addGameSet,
+    isSessionComplete,
+    reset: resetFearless,
+  } = useFearless();
+
   // 호스트인 경우: 서버로부터 받은 리그 클라이언트 데이터를 P2P로 브로드캐스트
   useEffect(() => {
     if (isHost && champSelectData !== undefined) {
       broadcastData(champSelectData);
     }
   }, [isHost, champSelectData, broadcastData]);
+
+  // 세션 완료 감지 및 기록
+  useEffect(() => {
+    const displayData = isHost ? champSelectData : receivedData;
+
+    if (displayData) {
+      const isComplete = isSessionComplete(displayData);
+      const phase = displayData.timer.phase;
+      
+      console.log("현재 phase:", phase, "완료 여부:", isComplete);
+      
+      // Finalization 단계 = 게임 시작 확정
+      if (phase === "Finalization" && lastSessionState !== "finalized") {
+        console.log("🎮 게임 시작 확정 (Finalization) - 기록 추가");
+        addGameSet(displayData);
+        setLastSessionState("finalized");
+        setCompletedSessionData(null);
+      } else if (isComplete && lastSessionState !== "completed" && lastSessionState !== "finalized") {
+        // 세션이 완료됨 (모든 픽 완료)
+        console.log("✅ 챔피언 선택 완료 - 데이터 저장");
+        setCompletedSessionData(displayData);
+        setLastSessionState("completed");
+      } else if (!isComplete && (lastSessionState === "completed" || lastSessionState === "finalized")) {
+        // 새로운 세션 시작
+        console.log("🔄 새 세션 시작");
+        setLastSessionState("active");
+        setCompletedSessionData(null);
+      } else if (!isComplete && lastSessionState === null) {
+        // 첫 세션 시작
+        setLastSessionState("active");
+      }
+    } else if (lastSessionState !== null && lastSessionState !== "finalized") {
+      // 세션이 사라짐 (Finalization 전에)
+      console.log("❌ 세션 종료됨");
+      setLastSessionState(null);
+      setCompletedSessionData(null);
+    }
+  }, [isHost, champSelectData, receivedData, isSessionComplete, addGameSet, lastSessionState, completedSessionData]);
 
   // 방 만들기 핸들러 (호스트)
   const handleCreateRoom = async () => {
@@ -53,6 +106,12 @@ export function App() {
 
   // 표시할 데이터 결정 (호스트면 자신의 데이터, 게스트면 받은 데이터)
   const displayData = isHost ? champSelectData : receivedData;
+
+  // 피어리스 규칙에 따른 제한 챔피언 계산
+  const restrictedChampions = {
+    myTeam: getRestrictedChampions(fearlessMode, gameSets, true),
+    theirTeam: getRestrictedChampions(fearlessMode, gameSets, false),
+  };
 
   return (
     <div className="container mx-auto p-4 md:p-8 relative z-10">
@@ -81,7 +140,7 @@ export function App() {
         {/* 연결 상태 표시 */}
         {peerId && (
           <Card>
-            <CardContent className="pt-6">
+            <CardContent>
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">
@@ -121,9 +180,30 @@ export function App() {
           </Card>
         )}
 
+        {/* 피어리스 모드 선택 */}
+        {peerId && isHost && (
+          <FearlessModeSelector
+            currentMode={fearlessMode}
+            onModeChange={setFearlessMode}
+            disabled={false}
+          />
+        )}
+
+        {/* 게임 세트 기록 */}
+        {peerId && gameSets.length > 0 && (
+          <GameSetHistory
+            gameSets={gameSets}
+            onReset={resetFearless}
+          />
+        )}
+
         {/* 챔피언 선택 데이터 표시 */}
         {peerId && (
-          <ChampSelectDisplay session={displayData} />
+          <ChampSelectDisplay 
+            session={displayData}
+            fearlessMode={fearlessMode}
+            restrictedChampions={restrictedChampions}
+          />
         )}
 
         {/* 사용 안내 */}

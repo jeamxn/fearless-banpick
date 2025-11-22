@@ -1,12 +1,22 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ChampSelectSession } from "../types/champSelect";
+import type { FearlessMode } from "../types/fearless";
 import { getChampionIconUrl, getChampionName } from "../utils/championData";
 
 interface ChampSelectDisplayProps {
   session: ChampSelectSession | null;
+  fearlessMode?: FearlessMode;
+  restrictedChampions?: {
+    myTeam: number[];
+    theirTeam: number[];
+  };
 }
 
-export const ChampSelectDisplay = ({ session }: ChampSelectDisplayProps) => {
+export const ChampSelectDisplay = ({ 
+  session, 
+  fearlessMode = "none",
+  restrictedChampions = { myTeam: [], theirTeam: [] }
+}: ChampSelectDisplayProps) => {
   if (!session) {
     return (
       <Card className="w-full">
@@ -70,6 +80,27 @@ export const ChampSelectDisplay = ({ session }: ChampSelectDisplayProps) => {
 
   return (
     <div className="w-full space-y-4">
+      {/* 피어리스 모드 정보 */}
+      {fearlessMode !== "none" && (restrictedChampions.myTeam.length > 0 || restrictedChampions.theirTeam.length > 0) && (
+        <Card className="border-orange-500 bg-orange-50">
+          <CardContent className="pt-4">
+            <div className="flex items-center gap-2 text-orange-800">
+              <span className="text-lg">⚠️</span>
+              <div className="flex-1">
+                <p className="font-semibold text-sm">
+                  {fearlessMode === "soft" ? "소프트 피어리스" : "하드 피어리스"} 활성화
+                </p>
+                <p className="text-xs">
+                  {fearlessMode === "soft" 
+                    ? "이전 세트에서 자기 팀이 선택한 챔피언은 선택할 수 없습니다."
+                    : "이전 세트에서 양 팀이 선택한 모든 챔피언은 선택할 수 없습니다."}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* 타이머 정보 */}
       <Card>
         <CardHeader>
@@ -216,6 +247,8 @@ export const ChampSelectDisplay = ({ session }: ChampSelectDisplayProps) => {
               const isLocalPlayer = player.cellId === session.localPlayerCellId;
               const hasPicked = player.championId !== 0;
               const hasIntent = player.championPickIntent !== 0;
+              const isRestricted = hasPicked && restrictedChampions.myTeam.includes(player.championId);
+              const isIntentRestricted = hasIntent && restrictedChampions.myTeam.includes(player.championPickIntent);
 
               return (
                 <div
@@ -231,7 +264,9 @@ export const ChampSelectDisplay = ({ session }: ChampSelectDisplayProps) => {
                   {/* 챔피언 초상화 */}
                   <div className="relative">
                     {hasPicked ? (
-                      <div className="relative w-16 h-16 rounded-lg overflow-hidden border-2 border-blue-500">
+                      <div className={`relative w-16 h-16 rounded-lg overflow-hidden border-2 ${
+                        isRestricted ? "border-red-500" : "border-blue-500"
+                      }`}>
                         <img
                           src={getChampionIconUrl(player.championId)}
                           alt={getChampionName(player.championId)}
@@ -241,9 +276,16 @@ export const ChampSelectDisplay = ({ session }: ChampSelectDisplayProps) => {
                               "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/profileicon/29.png";
                           }}
                         />
+                        {isRestricted && (
+                          <div className="absolute inset-0 bg-red-500/60 flex items-center justify-center">
+                            <span className="text-white text-xs font-bold">🚫</span>
+                          </div>
+                        )}
                       </div>
                     ) : hasIntent ? (
-                      <div className="relative w-16 h-16 rounded-lg overflow-hidden border-2 border-blue-300 border-dashed">
+                      <div className={`relative w-16 h-16 rounded-lg overflow-hidden border-2 ${
+                        isIntentRestricted ? "border-red-300 border-dashed" : "border-blue-300 border-dashed"
+                      }`}>
                         <img
                           src={getChampionIconUrl(player.championPickIntent)}
                           alt={getChampionName(player.championPickIntent)}
@@ -253,8 +295,12 @@ export const ChampSelectDisplay = ({ session }: ChampSelectDisplayProps) => {
                               "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/profileicon/29.png";
                           }}
                         />
-                        <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
-                          <span className="text-white text-xs font-bold">의도</span>
+                        <div className={`absolute inset-0 ${
+                          isIntentRestricted ? "bg-red-500/40" : "bg-blue-500/20"
+                        } flex items-center justify-center`}>
+                          <span className="text-white text-xs font-bold">
+                            {isIntentRestricted ? "제한" : "의도"}
+                          </span>
                         </div>
                       </div>
                     ) : (
@@ -271,10 +317,14 @@ export const ChampSelectDisplay = ({ session }: ChampSelectDisplayProps) => {
                     </div>
                     <div className="text-sm">
                       {hasPicked ? (
-                        <span className="font-medium">{getChampionName(player.championId)}</span>
+                        <span className={`font-medium ${isRestricted ? "text-red-600" : ""}`}>
+                          {getChampionName(player.championId)}
+                          {isRestricted && " ⚠️"}
+                        </span>
                       ) : hasIntent ? (
-                        <span className="text-muted-foreground">
-                          {getChampionName(player.championPickIntent)} (의도)
+                        <span className={`text-muted-foreground ${isIntentRestricted ? "text-red-600" : ""}`}>
+                          {getChampionName(player.championPickIntent)} 
+                          {isIntentRestricted ? " (제한)" : " (의도)"}
                         </span>
                       ) : (
                         <span className="text-muted-foreground">선택 안 함</span>
@@ -297,6 +347,7 @@ export const ChampSelectDisplay = ({ session }: ChampSelectDisplayProps) => {
           <div className="space-y-3">
             {session.theirTeam.map((player) => {
               const hasPicked = player.championId !== 0;
+              const isRestricted = hasPicked && restrictedChampions.theirTeam.includes(player.championId);
 
               return (
                 <div
@@ -306,7 +357,9 @@ export const ChampSelectDisplay = ({ session }: ChampSelectDisplayProps) => {
                   {/* 챔피언 초상화 */}
                   <div className="relative">
                     {hasPicked ? (
-                      <div className="relative w-16 h-16 rounded-lg overflow-hidden border-2 border-red-500">
+                      <div className={`relative w-16 h-16 rounded-lg overflow-hidden border-2 ${
+                        isRestricted ? "border-orange-500" : "border-red-500"
+                      }`}>
                         <img
                           src={getChampionIconUrl(player.championId)}
                           alt={getChampionName(player.championId)}
@@ -316,6 +369,11 @@ export const ChampSelectDisplay = ({ session }: ChampSelectDisplayProps) => {
                               "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/profileicon/29.png";
                           }}
                         />
+                        {isRestricted && (
+                          <div className="absolute inset-0 bg-orange-500/60 flex items-center justify-center">
+                            <span className="text-white text-xs font-bold">🚫</span>
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <div className="w-16 h-16 rounded-lg bg-gray-200 border-2 border-gray-300 flex items-center justify-center">
@@ -328,7 +386,10 @@ export const ChampSelectDisplay = ({ session }: ChampSelectDisplayProps) => {
                   <div className="flex-1">
                     <div className="text-sm">
                       {hasPicked ? (
-                        <span className="font-medium">{getChampionName(player.championId)}</span>
+                        <span className={`font-medium ${isRestricted ? "text-orange-600" : ""}`}>
+                          {getChampionName(player.championId)}
+                          {isRestricted && " ⚠️"}
+                        </span>
                       ) : (
                         <span className="text-muted-foreground">선택 안 함</span>
                       )}
