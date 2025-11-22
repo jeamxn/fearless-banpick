@@ -2,15 +2,31 @@ import { useState, useEffect, useCallback } from "react";
 import type { ChampSelectSession } from "../types/champSelect";
 import type { FearlessMode, GameSet, FearlessState } from "../types/fearless";
 
-const STORAGE_KEY = "fearless-banpick-state";
+const STORAGE_KEY_PREFIX = "fearless-banpick-state";
 
-export const useFearless = () => {
+const getStorageKey = (roomId: string | null) => {
+  if (!roomId) return null;
+  return `${STORAGE_KEY_PREFIX}-${roomId}`;
+};
+
+export const useFearless = (roomId: string | null = null) => {
   const [fearlessState, setFearlessState] = useState<FearlessState>(() => {
-    // 로컬 스토리지에서 불러오기
+    // 방 ID가 없으면 기본 상태 반환
+    if (!roomId) {
+      return {
+        mode: "none" as FearlessMode,
+        gameSets: [],
+      };
+    }
+
+    // 로컬 스토리지에서 방별로 불러오기
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        return JSON.parse(saved);
+      const storageKey = getStorageKey(roomId);
+      if (storageKey) {
+        const saved = localStorage.getItem(storageKey);
+        if (saved) {
+          return JSON.parse(saved);
+        }
       }
     } catch (error) {
       console.error("피어리스 상태 로드 실패:", error);
@@ -22,15 +38,61 @@ export const useFearless = () => {
   });
 
   const [lastSessionId, setLastSessionId] = useState<string | null>(null);
+  const [currentRoomId, setCurrentRoomId] = useState<string | null>(roomId);
 
-  // 상태가 변경될 때마다 로컬 스토리지에 저장
+  // 방 ID가 변경되면 상태 초기화 및 로드
   useEffect(() => {
+    if (roomId !== currentRoomId) {
+      setCurrentRoomId(roomId);
+      setLastSessionId(null);
+
+      if (!roomId) {
+        setFearlessState({
+          mode: "none" as FearlessMode,
+          gameSets: [],
+        });
+        return;
+      }
+
+      // 새 방의 데이터 로드
+      try {
+        const storageKey = getStorageKey(roomId);
+        if (storageKey) {
+          const saved = localStorage.getItem(storageKey);
+          if (saved) {
+            setFearlessState(JSON.parse(saved));
+            console.log(`📂 방 ${roomId}의 데이터 로드 완료`);
+          } else {
+            setFearlessState({
+              mode: "none" as FearlessMode,
+              gameSets: [],
+            });
+            console.log(`📂 방 ${roomId}의 새 데이터 생성`);
+          }
+        }
+      } catch (error) {
+        console.error("피어리스 상태 로드 실패:", error);
+        setFearlessState({
+          mode: "none" as FearlessMode,
+          gameSets: [],
+        });
+      }
+    }
+  }, [roomId, currentRoomId]);
+
+  // 상태가 변경될 때마다 로컬 스토리지에 방별로 저장
+  useEffect(() => {
+    if (!currentRoomId) return;
+
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(fearlessState));
+      const storageKey = getStorageKey(currentRoomId);
+      if (storageKey) {
+        localStorage.setItem(storageKey, JSON.stringify(fearlessState));
+      }
     } catch (error) {
       console.error("피어리스 상태 저장 실패:", error);
     }
-  }, [fearlessState]);
+  }, [fearlessState, currentRoomId]);
 
   // 피어리스 모드 변경
   const setMode = useCallback((mode: FearlessMode) => {

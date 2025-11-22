@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ChampSelectSession } from "../types/champSelect";
 import type { FearlessMode } from "../types/fearless";
@@ -17,6 +18,17 @@ export const ChampSelectDisplay = ({
   fearlessMode = "none",
   restrictedChampions = { myTeam: [], theirTeam: [] }
 }: ChampSelectDisplayProps) => {
+  const [currentTime, setCurrentTime] = useState(Date.now());
+
+  // 1초마다 현재 시간 업데이트
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 100); // 100ms마다 업데이트 (더 부드러운 애니메이션)
+
+    return () => clearInterval(interval);
+  }, []);
+
   if (!session) {
     return (
       <Card className="w-full">
@@ -30,6 +42,23 @@ export const ChampSelectDisplay = ({
   }
 
   console.log("ChampSelect 세션 데이터:", session);
+
+  // 실시간 남은 시간 계산
+  const calculateRemainingTime = () => {
+    if (session.timer.isInfinite) {
+      return { seconds: Infinity, percentage: 100 };
+    }
+
+    const elapsedSinceSnapshot = currentTime - session.timer.internalNowInEpochMs;
+    const remainingMs = session.timer.adjustedTimeLeftInPhase - elapsedSinceSnapshot;
+    const remainingSeconds = Math.max(0, Math.floor(remainingMs / 1000));
+    const totalSeconds = Math.floor(session.timer.totalTimeInPhase / 1000);
+    const percentage = totalSeconds > 0 ? Math.max(0, Math.min(100, (remainingSeconds / totalSeconds) * 100)) : 0;
+
+    return { seconds: remainingSeconds, percentage };
+  };
+
+  const { seconds: remainingSeconds, percentage: timePercentage } = calculateRemainingTime();
 
   // 밴 정보 추출
   const myTeamBans: Array<{ id: number; status: "completed" | "inProgress" | "pending" }> = [];
@@ -107,14 +136,46 @@ export const ChampSelectDisplay = ({
           <CardTitle className="text-xl">⏱️ 타이머</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            <p>
-              <span className="font-semibold">현재 단계:</span> {session.timer.phase}
-            </p>
-            <p>
-              <span className="font-semibold">남은 시간:</span>{" "}
-              {Math.floor(session.timer.adjustedTimeLeftInPhase / 1000)}초
-            </p>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="font-semibold">현재 단계:</span>
+              <span className="text-muted-foreground">{session.timer.phase}</span>
+            </div>
+            
+            {/* 프로그레스 바 */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="font-semibold">남은 시간:</span>
+                <span className={`font-mono text-lg font-bold ${
+                  remainingSeconds <= 10 ? "text-red-600 animate-pulse" : "text-blue-600"
+                }`}>
+                  {remainingSeconds === Infinity ? "∞" : `${remainingSeconds}초`}
+                </span>
+              </div>
+              
+              {/* 프로그레스 바 */}
+              <div className="relative w-full h-4 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  className={`absolute top-0 left-0 h-full transition-all duration-100 ease-linear ${
+                    timePercentage > 50
+                      ? "bg-linear-to-r from-green-500 to-green-600"
+                      : timePercentage > 20
+                      ? "bg-linear-to-r from-yellow-500 to-yellow-600"
+                      : "bg-linear-to-r from-red-500 to-red-600"
+                  }`}
+                  style={{ width: `${timePercentage}%` }}
+                >
+                  {/* 반짝이는 효과 */}
+                  <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
+                </div>
+              </div>
+              
+              {/* 총 시간 표시 */}
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>0초</span>
+                <span>{Math.floor(session.timer.totalTimeInPhase / 1000)}초</span>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>

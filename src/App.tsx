@@ -51,7 +51,7 @@ export function App() {
     isSessionComplete,
     reset: resetFearless,
     removeGameSet,
-  } = useFearless();
+  } = useFearless(peerId);
 
   // 호스트인 경우: 서버로부터 받은 리그 클라이언트 데이터를 P2P로 브로드캐스트
   useEffect(() => {
