@@ -83,7 +83,7 @@ export const ChampSelectDisplay = ({
       {/* 피어리스 모드 정보 */}
       {fearlessMode !== "none" && (restrictedChampions.myTeam.length > 0 || restrictedChampions.theirTeam.length > 0) && (
         <Card className="border-orange-500 bg-orange-50">
-          <CardContent className="pt-4">
+          <CardContent className="">
             <div className="flex items-center gap-2 text-orange-800">
               <span className="text-lg">⚠️</span>
               <div className="flex-1">

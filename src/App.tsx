@@ -50,6 +50,7 @@ export function App() {
     addGameSet,
     isSessionComplete,
     reset: resetFearless,
+    removeGameSet,
   } = useFearless();
 
   // 호스트인 경우: 서버로부터 받은 리그 클라이언트 데이터를 P2P로 브로드캐스트
@@ -65,12 +66,12 @@ export function App() {
 
     if (displayData) {
       const isComplete = isSessionComplete(displayData);
-      const phase = displayData.timer.phase;
+      const phase = displayData.timer.phase?.toLowerCase() || "";
       
       console.log("현재 phase:", phase, "완료 여부:", isComplete);
       
       // Finalization 단계 = 게임 시작 확정
-      if (phase === "Finalization" && lastSessionState !== "finalized") {
+      if (phase === "finalization" && lastSessionState !== "finalized") {
         console.log("🎮 게임 시작 확정 (Finalization) - 기록 추가");
         addGameSet(displayData);
         setLastSessionState("finalized");
@@ -194,6 +195,7 @@ export function App() {
           <GameSetHistory
             gameSets={gameSets}
             onReset={resetFearless}
+            onRemoveSet={removeGameSet}
           />
         )}
 

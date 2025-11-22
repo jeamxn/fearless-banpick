@@ -135,6 +135,23 @@ export const useFearless = () => {
     console.log("🔄 피어리스 기록 초기화");
   }, [fearlessState.mode]);
 
+  // 특정 세트 삭제
+  const removeGameSet = useCallback((setId: string) => {
+    setFearlessState((prev) => {
+      const filteredSets = prev.gameSets.filter((set) => set.id !== setId);
+      // 세트 번호 재정렬
+      const reorderedSets = filteredSets.map((set, index) => ({
+        ...set,
+        setNumber: index + 1,
+      }));
+      return {
+        ...prev,
+        gameSets: reorderedSets,
+      };
+    });
+    console.log("🗑️ 세트 삭제 완료");
+  }, []);
+
   return {
     mode: fearlessState.mode,
     gameSets: fearlessState.gameSets,
@@ -142,6 +159,7 @@ export const useFearless = () => {
     addGameSet,
     isSessionComplete,
     reset,
+    removeGameSet,
   };
 };
 

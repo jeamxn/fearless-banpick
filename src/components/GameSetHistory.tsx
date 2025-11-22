@@ -7,10 +7,12 @@ import { useState } from "react";
 interface GameSetHistoryProps {
   gameSets: GameSet[];
   onReset: () => void;
+  onRemoveSet: (setId: string) => void;
 }
 
-export const GameSetHistory = ({ gameSets, onReset }: GameSetHistoryProps) => {
+export const GameSetHistory = ({ gameSets, onReset, onRemoveSet }: GameSetHistoryProps) => {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   if (gameSets.length === 0) {
     return (
@@ -27,6 +29,11 @@ export const GameSetHistory = ({ gameSets, onReset }: GameSetHistoryProps) => {
   const handleReset = () => {
     onReset();
     setShowResetConfirm(false);
+  };
+
+  const handleRemoveSet = (setId: string) => {
+    onRemoveSet(setId);
+    setDeleteConfirmId(null);
   };
 
   return (
@@ -71,15 +78,45 @@ export const GameSetHistory = ({ gameSets, onReset }: GameSetHistoryProps) => {
             >
               {/* 세트 헤더 */}
               <div className="flex items-center justify-between">
-                <h3 className="font-bold text-lg">세트 {gameSet.setNumber}</h3>
-                <span className="text-sm text-muted-foreground">
-                  {new Date(gameSet.timestamp).toLocaleString("ko-KR", {
-                    month: "short",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
+                <div className="flex items-center gap-3">
+                  <h3 className="font-bold text-lg">세트 {gameSet.setNumber}</h3>
+                  <span className="text-sm text-muted-foreground">
+                    {new Date(gameSet.timestamp).toLocaleString("ko-KR", {
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
+                {/* 삭제 버튼 */}
+                {deleteConfirmId === gameSet.id ? (
+                  <div className="flex gap-2">
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleRemoveSet(gameSet.id)}
+                    >
+                      확인
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setDeleteConfirmId(null)}
+                    >
+                      취소
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setDeleteConfirmId(gameSet.id)}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    삭제
+                  </Button>
+                )}
               </div>
 
               {/* 밴 */}
