@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RoomControls } from "@/components/RoomControls";
@@ -66,6 +66,17 @@ export function App() {
   useEffect(() => {
     const displayData = isHost ? champSelectData : receivedData;
 
+    // finalized 상태에서는 더 이상 처리하지 않음 (깜빡임 방지)
+    // 단, 새로운 세션이 시작되면 (displayData가 없어지면) 리셋
+    if (lastSessionState === "finalized") {
+      if (!displayData) {
+        console.log("🔄 새 세션 시작 (finalized 상태에서)");
+        setLastSessionState("active");
+        setCompletedSessionData(null);
+      }
+      return;
+    }
+
     if (displayData) {
       const isComplete = isSessionComplete(displayData);
       const phase = displayData.timer.phase?.toLowerCase() || "";
@@ -73,17 +84,17 @@ export function App() {
       console.log("현재 phase:", phase, "완료 여부:", isComplete);
       
       // Finalization 단계 = 게임 시작 확정
-      if (phase === "finalization" && lastSessionState !== "finalized") {
+      if (phase === "finalization") {
         console.log("🎮 게임 시작 확정 (Finalization) - 기록 추가");
         addGameSet(displayData);
         setLastSessionState("finalized");
         setCompletedSessionData(null);
-      } else if (isComplete && lastSessionState !== "completed" && lastSessionState !== "finalized") {
+      } else if (isComplete && lastSessionState !== "completed") {
         // 세션이 완료됨 (모든 픽 완료)
         console.log("✅ 챔피언 선택 완료 - 데이터 저장");
         setCompletedSessionData(displayData);
         setLastSessionState("completed");
-      } else if (!isComplete && (lastSessionState === "completed" || lastSessionState === "finalized")) {
+      } else if (!isComplete && lastSessionState === "completed") {
         // 새로운 세션 시작
         console.log("🔄 새 세션 시작");
         setLastSessionState("active");
@@ -92,13 +103,13 @@ export function App() {
         // 첫 세션 시작
         setLastSessionState("active");
       }
-    } else if (lastSessionState !== null && lastSessionState !== "finalized") {
+    } else if (lastSessionState !== null) {
       // 세션이 사라짐 (Finalization 전에)
       console.log("❌ 세션 종료됨");
       setLastSessionState(null);
       setCompletedSessionData(null);
     }
-  }, [isHost, champSelectData, receivedData, isSessionComplete, addGameSet, lastSessionState, completedSessionData]);
+  }, [isHost, champSelectData, receivedData, isSessionComplete, addGameSet, lastSessionState]);
 
   // 방 만들기 핸들러 (호스트)
   const handleCreateRoom = async () => {
@@ -108,7 +119,9 @@ export function App() {
   };
 
   // 표시할 데이터 결정 (호스트면 자신의 데이터, 게스트면 받은 데이터)
-  const displayData = isHost ? champSelectData : receivedData;
+  const displayData = useMemo(() => {
+    return isHost ? champSelectData : receivedData;
+  }, [isHost, champSelectData, receivedData]);
 
   // 피어리스 규칙에 따른 제한 챔피언 계산
   const restrictedChampions = {
