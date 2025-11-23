@@ -16,9 +16,9 @@ export const GameSetHistory = ({ gameSets, onReset, onRemoveSet }: GameSetHistor
 
   if (gameSets.length === 0) {
     return (
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <p className="text-center text-gray-500 text-sm">
-          아직 기록된 게임 세트가 없습니다.
+      <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-8 border border-slate-700 backdrop-blur-sm">
+        <p className="text-center text-gray-500 text-sm font-semibold uppercase tracking-wide">
+          No game sets recorded yet
         </p>
       </div>
     );
@@ -35,51 +35,53 @@ export const GameSetHistory = ({ gameSets, onReset, onRemoveSet }: GameSetHistor
   };
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-bold text-gray-900">📊 게임 세트 기록</h3>
+    <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 rounded-xl p-6 border-2 border-purple-500/50 backdrop-blur-sm glow-purple">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 uppercase tracking-wide">
+          📊 MATCH HISTORY
+        </h3>
         <div>
           {showResetConfirm ? (
             <div className="flex gap-2 shrink-0">
               <Button
                 size="sm"
                 onClick={handleReset}
-                className="bg-red-600 hover:bg-red-700 text-white rounded-lg h-8 px-3 text-xs"
+                className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-white rounded-lg h-9 px-4 text-xs font-black uppercase tracking-wider glow-red"
               >
-                확인
+                CONFIRM
               </Button>
               <Button
                 size="sm"
                 onClick={() => setShowResetConfirm(false)}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-900 rounded-lg h-8 px-3 text-xs"
+                className="bg-slate-700 hover:bg-slate-600 text-gray-200 rounded-lg h-9 px-4 text-xs font-black uppercase tracking-wider"
               >
-                취소
+                CANCEL
               </Button>
             </div>
           ) : (
             <Button
               size="sm"
               onClick={() => setShowResetConfirm(true)}
-              className="bg-gray-200 hover:bg-gray-300 text-gray-900 rounded-lg h-8 px-3 text-xs shrink-0"
+              className="bg-slate-700 hover:bg-slate-600 text-gray-200 rounded-lg h-9 px-4 text-xs font-black uppercase tracking-wider shrink-0"
             >
-              초기화
+              RESET
             </Button>
           )}
         </div>
       </div>
       
-      <div className="space-y-4 mt-4">
+      <div className="space-y-4 mt-6">
           {gameSets.map((gameSet) => (
             <div
               key={gameSet.id}
-              className="border border-gray-200 rounded-xl p-5 space-y-4 bg-gray-50"
+              className="border-2 border-purple-500/30 rounded-lg p-6 space-y-5 bg-slate-900/60 backdrop-blur-sm"
             >
               {/* 세트 헤더 */}
               <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-3 min-w-0 flex-1">
-                  <h3 className="font-bold text-base text-gray-900 shrink-0">세트 {gameSet.setNumber}</h3>
-                  <span className="text-xs text-gray-500 truncate">
-                    {new Date(gameSet.timestamp).toLocaleString("ko-KR", {
+                <div className="flex items-center gap-4 min-w-0 flex-1">
+                  <h3 className="font-black text-xl text-purple-300 shrink-0 uppercase tracking-wide">SET {gameSet.setNumber}</h3>
+                  <span className="text-xs text-gray-500 truncate font-semibold uppercase tracking-wider">
+                    {new Date(gameSet.timestamp).toLocaleString("en-US", {
                       month: "short",
                       day: "numeric",
                       hour: "2-digit",
@@ -93,43 +95,43 @@ export const GameSetHistory = ({ gameSets, onReset, onRemoveSet }: GameSetHistor
                     <Button
                       size="sm"
                       onClick={() => handleRemoveSet(gameSet.id)}
-                      className="bg-red-600 hover:bg-red-700 text-white rounded-lg h-8 px-3 text-xs"
+                      className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-white rounded-lg h-8 px-3 text-xs font-black uppercase tracking-wider glow-red"
                     >
-                      확인
+                      YES
                     </Button>
                     <Button
                       size="sm"
                       onClick={() => setDeleteConfirmId(null)}
-                      className="bg-gray-200 hover:bg-gray-300 text-gray-900 rounded-lg h-8 px-3 text-xs"
+                      className="bg-slate-700 hover:bg-slate-600 text-gray-200 rounded-lg h-8 px-3 text-xs font-black uppercase tracking-wider"
                     >
-                      취소
+                      NO
                     </Button>
                   </div>
                 ) : (
                   <Button
                     size="sm"
                     onClick={() => setDeleteConfirmId(gameSet.id)}
-                    className="text-red-600 hover:bg-red-50 rounded-lg h-8 px-3 text-xs shrink-0"
+                    className="text-red-400 hover:bg-red-500/20 rounded-lg h-8 px-3 text-xs shrink-0 font-black uppercase tracking-wider"
                     variant="ghost"
                   >
-                    삭제
+                    DELETE
                   </Button>
                 )}
               </div>
 
               {/* 밴 */}
-              <div className="space-y-2">
-                <p className="text-sm font-semibold text-muted-foreground">밴</p>
-                <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-3">
+                <p className="text-sm font-black text-gray-400 uppercase tracking-wider">BANS</p>
+                <div className="grid grid-cols-2 gap-4">
                   {/* 우리 팀 밴 */}
                   <div>
-                    <p className="text-xs font-semibold text-blue-600 mb-2">우리 팀</p>
-                    <div className="flex flex-wrap gap-1">
+                    <p className="text-xs font-black text-cyan-400 mb-3 uppercase tracking-wider">YOUR TEAM</p>
+                    <div className="flex flex-wrap gap-2">
                       {gameSet.myTeamBans.length > 0 ? (
                         gameSet.myTeamBans.map((championId, idx) => (
                           <div
                             key={idx}
-                            className="relative w-10 h-10 rounded overflow-hidden border border-blue-500"
+                            className="relative w-12 h-12 rounded-lg overflow-hidden border-2 border-cyan-500/50 glow-cyan"
                             title={getChampionName(championId)}
                           >
                             <img
@@ -137,26 +139,26 @@ export const GameSetHistory = ({ gameSets, onReset, onRemoveSet }: GameSetHistor
                               alt={getChampionName(championId)}
                               className="w-full h-full object-cover"
                             />
-                            <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                              <span className="text-white text-xs font-bold">✕</span>
+                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                              <span className="text-cyan-400 text-sm font-bold drop-shadow-[0_0_5px_rgba(6,182,212,0.8)]">✕</span>
                             </div>
                           </div>
                         ))
                       ) : (
-                        <span className="text-xs text-muted-foreground">없음</span>
+                        <span className="text-xs text-gray-600 font-semibold uppercase">NONE</span>
                       )}
                     </div>
                   </div>
 
                   {/* 상대 팀 밴 */}
                   <div>
-                    <p className="text-xs font-semibold text-red-600 mb-2">상대 팀</p>
-                    <div className="flex flex-wrap gap-1">
+                    <p className="text-xs font-black text-red-400 mb-3 uppercase tracking-wider">ENEMY TEAM</p>
+                    <div className="flex flex-wrap gap-2">
                       {gameSet.theirTeamBans.length > 0 ? (
                         gameSet.theirTeamBans.map((championId, idx) => (
                           <div
                             key={idx}
-                            className="relative w-10 h-10 rounded overflow-hidden border border-red-500"
+                            className="relative w-12 h-12 rounded-lg overflow-hidden border-2 border-red-500/50 glow-red"
                             title={getChampionName(championId)}
                           >
                             <img
@@ -164,13 +166,13 @@ export const GameSetHistory = ({ gameSets, onReset, onRemoveSet }: GameSetHistor
                               alt={getChampionName(championId)}
                               className="w-full h-full object-cover"
                             />
-                            <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                              <span className="text-white text-xs font-bold">✕</span>
+                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                              <span className="text-red-400 text-sm font-bold drop-shadow-[0_0_5px_rgba(239,68,68,0.8)]">✕</span>
                             </div>
                           </div>
                         ))
                       ) : (
-                        <span className="text-xs text-muted-foreground">없음</span>
+                        <span className="text-xs text-gray-600 font-semibold uppercase">NONE</span>
                       )}
                     </div>
                   </div>
@@ -178,18 +180,18 @@ export const GameSetHistory = ({ gameSets, onReset, onRemoveSet }: GameSetHistor
               </div>
 
               {/* 픽 */}
-              <div className="space-y-2">
-                <p className="text-sm font-semibold text-muted-foreground">픽</p>
-                <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-3">
+                <p className="text-sm font-black text-gray-400 uppercase tracking-wider">PICKS</p>
+                <div className="grid grid-cols-2 gap-4">
                   {/* 우리 팀 픽 */}
                   <div>
-                    <p className="text-xs font-semibold text-blue-600 mb-2">우리 팀</p>
-                    <div className="flex flex-wrap gap-1">
+                    <p className="text-xs font-black text-cyan-400 mb-3 uppercase tracking-wider">YOUR TEAM</p>
+                    <div className="flex flex-wrap gap-2">
                       {gameSet.myTeamPicks.length > 0 ? (
                         gameSet.myTeamPicks.map((championId, idx) => (
                           <div
                             key={idx}
-                            className="relative w-10 h-10 rounded overflow-hidden border-2 border-blue-500"
+                            className="relative w-12 h-12 rounded-lg overflow-hidden border-2 border-cyan-400 glow-cyan"
                             title={getChampionName(championId)}
                           >
                             <img
@@ -200,20 +202,20 @@ export const GameSetHistory = ({ gameSets, onReset, onRemoveSet }: GameSetHistor
                           </div>
                         ))
                       ) : (
-                        <span className="text-xs text-muted-foreground">없음</span>
+                        <span className="text-xs text-gray-600 font-semibold uppercase">NONE</span>
                       )}
                     </div>
                   </div>
 
                   {/* 상대 팀 픽 */}
                   <div>
-                    <p className="text-xs font-semibold text-red-600 mb-2">상대 팀</p>
-                    <div className="flex flex-wrap gap-1">
+                    <p className="text-xs font-black text-red-400 mb-3 uppercase tracking-wider">ENEMY TEAM</p>
+                    <div className="flex flex-wrap gap-2">
                       {gameSet.theirTeamPicks.length > 0 ? (
                         gameSet.theirTeamPicks.map((championId, idx) => (
                           <div
                             key={idx}
-                            className="relative w-10 h-10 rounded overflow-hidden border-2 border-red-500"
+                            className="relative w-12 h-12 rounded-lg overflow-hidden border-2 border-red-400 glow-red"
                             title={getChampionName(championId)}
                           >
                             <img
@@ -224,7 +226,7 @@ export const GameSetHistory = ({ gameSets, onReset, onRemoveSet }: GameSetHistor
                           </div>
                         ))
                       ) : (
-                        <span className="text-xs text-muted-foreground">없음</span>
+                        <span className="text-xs text-gray-600 font-semibold uppercase">NONE</span>
                       )}
                     </div>
                   </div>

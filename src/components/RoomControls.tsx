@@ -36,31 +36,31 @@ export const RoomControls = ({
 
   if (roomId) {
     return (
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          <h2 className="text-lg font-bold text-gray-900">연결됨</h2>
+      <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 rounded-xl p-6 border border-emerald-500/50 backdrop-blur-sm glow-cyan">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse glow-cyan" />
+          <h2 className="text-xl font-black text-emerald-400 uppercase tracking-wider">CONNECTED</h2>
         </div>
-        <p className="text-sm text-gray-600 mb-4 wrap-break-word">
-          방 코드를 공유하여 초대하세요
+        <p className="text-sm text-cyan-300/70 mb-4 wrap-break-word font-semibold">
+          Share room code to invite others
         </p>
         <div className="space-y-3">
           <div className="flex gap-2">
             <Input
               value={roomId}
               readOnly
-              className="font-mono text-lg font-bold border-gray-200 bg-gray-50 focus:bg-white transition-colors min-w-0"
+              className="font-mono text-xl font-black border-2 border-cyan-500/50 bg-slate-900/80 text-cyan-300 focus:bg-slate-800 transition-colors min-w-0 rounded-lg glow-cyan"
             />
             <Button 
               onClick={handleCopyRoomId}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 rounded-xl font-semibold shadow-sm shrink-0"
+              className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-6 rounded-lg font-black shadow-lg glow-cyan shrink-0 uppercase tracking-wide"
             >
-              복사
+              COPY
             </Button>
           </div>
-          <div className="bg-blue-50 rounded-xl p-3">
-            <p className="text-xs text-blue-900 wrap-break-word">
-              💡 코드 공유 시 실시간 밴픽 공유
+          <div className="bg-cyan-500/10 rounded-lg p-3 border border-cyan-500/30">
+            <p className="text-xs text-cyan-300 wrap-break-word font-bold uppercase tracking-wide">
+              ⚡ REAL-TIME BAN/PICK SHARING ACTIVE
             </p>
           </div>
         </div>
@@ -69,37 +69,39 @@ export const RoomControls = ({
   }
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-      <h2 className="text-lg font-bold text-gray-900 mb-2 wrap-break-word">🎮 밴픽 공유</h2>
-      <p className="text-sm text-gray-600 mb-6 wrap-break-word">
-        방을 만들거나 참가하세요
+    <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 rounded-xl p-6 border border-cyan-500/30 backdrop-blur-sm">
+      <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400 mb-2 wrap-break-word uppercase tracking-wide">
+        🎮 ROOM CONTROL
+      </h2>
+      <p className="text-sm text-cyan-300/70 mb-6 wrap-break-word font-semibold">
+        Create or join a room
       </p>
       
       <div className="space-y-4">
         {/* 방 만들기 */}
         <div className="space-y-3">
           <div>
-            <Label className="text-sm font-semibold text-gray-900">방 만들기</Label>
-            <p className="text-xs text-gray-500 mt-1 wrap-break-word">
-              리그오브레전드 클라이언트 실행 중인 PC에서 생성
+            <Label className="text-sm font-black text-gray-200 uppercase tracking-wider">CREATE ROOM</Label>
+            <p className="text-xs text-cyan-400/70 mt-1 wrap-break-word font-semibold">
+              Must have League Client running
             </p>
           </div>
           <Button
             onClick={onCreateRoom}
             disabled={isConnecting}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 rounded-xl font-semibold shadow-sm transition-all"
+            className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white h-14 rounded-lg font-black uppercase tracking-wider shadow-lg glow-cyan transition-all"
           >
-            {isConnecting ? "연결 중..." : "방 만들기"}
+            {isConnecting ? "CONNECTING..." : "CREATE ROOM"}
           </Button>
         </div>
 
         <div className="relative py-2">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-gray-200" />
+            <span className="w-full border-t border-cyan-500/30" />
           </div>
           <div className="relative flex justify-center">
-            <span className="bg-white px-3 text-xs text-gray-500 font-medium">
-              또는
+            <span className="bg-slate-900 px-3 text-xs text-cyan-400 font-black uppercase tracking-wider">
+              OR
             </span>
           </div>
         </div>
@@ -107,11 +109,11 @@ export const RoomControls = ({
         {/* 방 참가하기 */}
         <div className="space-y-3">
           <div>
-            <Label htmlFor="roomId" className="text-sm font-semibold text-gray-900">
-              방 참가하기
+            <Label htmlFor="roomId" className="text-sm font-black text-gray-200 uppercase tracking-wider">
+              JOIN ROOM
             </Label>
-            <p className="text-xs text-gray-500 mt-1 wrap-break-word">
-              방 코드 입력
+            <p className="text-xs text-purple-400/70 mt-1 wrap-break-word font-semibold">
+              Enter room code
             </p>
           </div>
           <div className="flex gap-2">
@@ -125,22 +127,22 @@ export const RoomControls = ({
                   handleJoinRoom();
                 }
               }}
-              className="font-mono text-base border-gray-200 bg-gray-50 focus:bg-white transition-colors rounded-xl h-12 min-w-0"
+              className="font-mono text-lg font-black border-2 border-purple-500/50 bg-slate-900/80 text-purple-300 focus:bg-slate-800 transition-colors rounded-lg h-14 min-w-0 placeholder:text-purple-500/30"
               disabled={isConnecting}
             />
             <Button
               onClick={handleJoinRoom}
               disabled={isConnecting || !roomIdInput.trim()}
-              className="bg-gray-900 hover:bg-gray-800 text-white px-4 rounded-xl font-semibold shadow-sm h-12 shrink-0"
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-6 rounded-lg font-black shadow-lg glow-purple h-14 shrink-0 uppercase tracking-wide"
             >
-              {isConnecting ? "연결 중" : "참가"}
+              {isConnecting ? "..." : "JOIN"}
             </Button>
           </div>
         </div>
 
         {error && (
-          <div className="p-4 rounded-xl bg-red-50 border border-red-100">
-            <p className="text-sm text-red-900 font-medium wrap-break-word">{error}</p>
+          <div className="p-4 rounded-lg bg-red-500/10 border-2 border-red-500/50 glow-red">
+            <p className="text-sm text-red-300 font-bold wrap-break-word uppercase tracking-wide">{error}</p>
           </div>
         )}
       </div>

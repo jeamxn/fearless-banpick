@@ -117,19 +117,27 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 w-full">
-      {/* 토스 스타일 헤더 */}
-      <header className="border-b border-gray-200 sticky top-0 z-50 backdrop-blur-sm bg-white/80">
+    <div className="min-h-screen w-full">
+      {/* 게임 스타일 헤더 */}
+      <header className="border-b border-cyan-500/30 sticky top-0 z-50 backdrop-blur-md bg-slate-900/90">
         <div className="container mx-auto px-4 md:px-6">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <img src={logo} alt="Logo" className="h-8 w-8" />
-              <h1 className="text-xl font-bold text-gray-900">밴픽 공유</h1>
+          <div className="flex items-center justify-between h-20">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <img src={logo} alt="Logo" className="h-10 w-10 drop-shadow-[0_0_10px_rgba(6,182,212,0.7)]" />
+                <div className="absolute inset-0 bg-cyan-500/20 blur-xl rounded-full"></div>
+              </div>
+              <div>
+                <h1 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 tracking-wide">
+                  FEARLESS DRAFT
+                </h1>
+                <p className="text-xs text-cyan-400/70 font-semibold tracking-widest">REAL-TIME BAN/PICK SHARING</p>
+              </div>
             </div>
             {roomId && (
-              <div className="flex items-center gap-2 text-sm">
-                <span className={`w-2 h-2 rounded-full ${isHost ? 'bg-blue-500' : 'bg-green-500'}`} />
-                <span className="text-gray-600 font-medium">{isHost ? '호스트' : '게스트'}</span>
+              <div className="flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-slate-800/80 to-slate-700/80 rounded-lg border border-cyan-500/30">
+                <span className={`w-3 h-3 rounded-full ${isHost ? 'bg-cyan-400 animate-pulse glow-cyan' : 'bg-purple-400 animate-pulse glow-purple'}`} />
+                <span className="text-gray-200 font-bold text-sm uppercase tracking-wider">{isHost ? 'HOST' : 'GUEST'}</span>
               </div>
             )}
           </div>
@@ -150,24 +158,24 @@ export function App() {
             error={peerError}
           />
 
-          {/* 연결 상태 표시 - 토스 스타일 */}
+          {/* 연결 상태 표시 - 게임 스타일 */}
           {roomId && (
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 rounded-xl p-5 border border-cyan-500/30 backdrop-blur-sm">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  isHost ? 'bg-blue-50' : 'bg-green-50'
+                <div className={`w-12 h-12 rounded-lg flex items-center justify-center border-2 ${
+                  isHost ? 'bg-cyan-500/20 border-cyan-400 glow-cyan' : 'bg-purple-500/20 border-purple-400 glow-purple'
                 }`}>
-                  <span className="text-lg">
+                  <span className="text-2xl">
                     {isHost ? "🏠" : "👥"}
                   </span>
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900">
-                    {isHost ? "호스트 모드" : "게스트 모드"}
+                  <p className="font-black text-gray-100 text-lg uppercase tracking-wide">
+                    {isHost ? "HOST MODE" : "GUEST MODE"}
                   </p>
-                  <p className="text-xs text-gray-500">
-                    연결된 사용자: {isHost ? connections.length : 1}명
+                  <p className="text-xs text-cyan-400 font-semibold">
+                    CONNECTED: {isHost ? connections.length : 1} USERS
                   </p>
                 </div>
               </div>
@@ -175,36 +183,40 @@ export function App() {
             
             {isHost && (
               <div className="space-y-3">
-                <div className={`flex items-center justify-between p-3 rounded-xl ${
-                  isLeagueConnected ? 'bg-green-50' : 'bg-gray-50'
+                <div className={`flex items-center justify-between p-4 rounded-lg border-2 ${
+                  isLeagueConnected 
+                    ? 'bg-emerald-500/10 border-emerald-400/50 glow-cyan' 
+                    : 'bg-slate-700/50 border-slate-600'
                 }`}>
-                  <div className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${
-                      isLeagueConnected ? "bg-green-500 animate-pulse" : "bg-gray-400"
+                  <div className="flex items-center gap-3">
+                    <span className={`w-3 h-3 rounded-full ${
+                      isLeagueConnected ? "bg-emerald-400 animate-pulse glow-cyan" : "bg-slate-500"
                     }`} />
-                    <span className="text-sm font-medium text-gray-900">
-                      리그오브레전드 클라이언트
+                    <span className="text-sm font-bold text-gray-200 uppercase tracking-wide">
+                      LEAGUE CLIENT
                     </span>
                   </div>
-                  <span className={`text-xs font-semibold ${
-                    isLeagueConnected ? 'text-green-700' : 'text-gray-600'
+                  <span className={`text-xs font-black uppercase tracking-wider px-3 py-1 rounded ${
+                    isLeagueConnected 
+                      ? 'text-emerald-400 bg-emerald-500/20' 
+                      : 'text-slate-400 bg-slate-700'
                   }`}>
-                    {isLeagueConnected ? "연결됨" : "연결 안 됨"}
+                    {isLeagueConnected ? "ONLINE" : "OFFLINE"}
                   </span>
                 </div>
                 
                 {!isLeagueConnected && (
                   <Button 
                     onClick={connectToLeague} 
-                    className="w-full bg-gray-900 hover:bg-gray-800 text-white rounded-xl h-10 font-semibold"
+                    className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg h-12 font-black uppercase tracking-wider shadow-lg glow-cyan"
                   >
-                    리그오브레전드 클라이언트 연결
+                    CONNECT TO CLIENT
                   </Button>
                 )}
                 
                 {leagueError && (
-                  <div className="p-3 rounded-xl bg-red-50">
-                    <p className="text-sm text-red-900">{leagueError}</p>
+                  <div className="p-4 rounded-lg bg-red-500/10 border-2 border-red-500/50 glow-red">
+                    <p className="text-sm text-red-300 font-semibold">{leagueError}</p>
                   </div>
                 )}
               </div>
@@ -221,41 +233,43 @@ export function App() {
             />
           )}
 
-          {/* 사용 안내 - 토스 스타일 */}
+          {/* 사용 안내 - 게임 스타일 */}
           {!roomId && (
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-              <h2 className="text-lg font-bold text-gray-900 mb-4">💡 사용 방법</h2>
+            <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 rounded-xl p-6 border border-cyan-500/30 backdrop-blur-sm">
+              <h2 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400 mb-6 uppercase tracking-wide">
+                💡 HOW TO USE
+              </h2>
               <div className="space-y-4">
                 <div className="flex gap-4">
-                  <div className="shrink-0 w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
-                    <span className="text-blue-600 font-bold text-sm">1</span>
+                  <div className="shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center glow-cyan border border-cyan-400/50">
+                    <span className="text-white font-black text-lg">1</span>
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold text-gray-900 mb-1">호스트</p>
-                    <p className="text-sm text-gray-600">
-                      방 만들기 후 코드 공유
+                    <p className="font-black text-gray-100 mb-1 uppercase tracking-wide">HOST</p>
+                    <p className="text-sm text-cyan-300/80">
+                      Create room & share code
                     </p>
                   </div>
                 </div>
                 <div className="flex gap-4">
-                  <div className="shrink-0 w-8 h-8 rounded-full bg-green-50 flex items-center justify-center">
-                    <span className="text-green-600 font-bold text-sm">2</span>
+                  <div className="shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center glow-purple border border-purple-400/50">
+                    <span className="text-white font-black text-lg">2</span>
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold text-gray-900 mb-1">게스트</p>
-                    <p className="text-sm text-gray-600">
-                      방 코드 입력 후 참가
+                    <p className="font-black text-gray-100 mb-1 uppercase tracking-wide">GUEST</p>
+                    <p className="text-sm text-purple-300/80">
+                      Enter code & join room
                     </p>
                   </div>
                 </div>
                 <div className="flex gap-4">
-                  <div className="shrink-0 w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center">
-                    <span className="text-purple-600 font-bold text-sm">3</span>
+                  <div className="shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center glow-cyan border border-emerald-400/50">
+                    <span className="text-white font-black text-lg">3</span>
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold text-gray-900 mb-1">실시간 공유</p>
-                    <p className="text-sm text-gray-600">
-                      자동으로 밴픽 공유
+                    <p className="font-black text-gray-100 mb-1 uppercase tracking-wide">LIVE SHARE</p>
+                    <p className="text-sm text-emerald-300/80">
+                      Auto ban/pick sharing
                     </p>
                   </div>
                 </div>
@@ -277,13 +291,13 @@ export function App() {
 
           {/* Finalization 후 대기 메시지 */}
           {roomId && lastSessionState === "finalized" && (
-            <div className="bg-white rounded-2xl p-12 shadow-sm border border-gray-100 text-center">
-              <div className="text-6xl mb-4">🎮</div>
-              <p className="text-lg font-semibold text-gray-900 mb-2">
-                게임이 시작되었습니다
+            <div className="bg-gradient-to-br from-emerald-900/40 to-teal-900/40 rounded-2xl p-16 border-2 border-emerald-500/50 backdrop-blur-sm text-center animate-glow-pulse">
+              <div className="text-8xl mb-6 animate-pulse">🎮</div>
+              <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400 mb-4 uppercase tracking-wide">
+                GAME STARTED
               </p>
-              <p className="text-sm text-gray-600">
-                다음 세트를 기다리는 중...
+              <p className="text-sm text-emerald-300/80 font-semibold uppercase tracking-wider">
+                Waiting for next set...
               </p>
             </div>
           )}
@@ -299,18 +313,24 @@ export function App() {
 
           {/* 환영 메시지 (방이 없을 때) */}
           {!roomId && (
-            <div className="bg-white rounded-2xl p-12 shadow-sm border border-gray-100 text-center">
-              <div className="text-6xl mb-4">👋</div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                리그오브레전드 밴픽 공유에 오신 것을 환영합니다
-              </h2>
-              <p className="text-gray-600 mb-6">
-                왼쪽에서 방을 만들거나 참가하여 시작하세요
-              </p>
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-full">
-                <span className="text-blue-600 text-sm font-medium">
-                  💡 실시간 P2P 밴픽 공유 서비스
-                </span>
+            <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-16 border-2 border-cyan-500/30 backdrop-blur-sm text-center relative overflow-hidden">
+              {/* 배경 효과 */}
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5"></div>
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-shimmer"></div>
+              
+              <div className="relative z-10">
+                <div className="text-8xl mb-6 animate-pulse">🎮</div>
+                <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 mb-4 uppercase tracking-wide">
+                  WELCOME TO FEARLESS DRAFT
+                </h2>
+                <p className="text-cyan-300/80 mb-8 text-lg font-semibold">
+                  Create or join a room to get started
+                </p>
+                <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-lg border border-cyan-400/50 glow-cyan">
+                  <span className="text-cyan-400 text-sm font-black uppercase tracking-wider">
+                    ⚡ REAL-TIME P2P BAN/PICK SHARING
+                  </span>
+                </div>
               </div>
             </div>
           )}

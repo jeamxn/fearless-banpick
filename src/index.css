@@ -3,12 +3,15 @@
 @layer base {
   :root {
     @apply font-sans;
-    /* 토스 스타일 폰트 */
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    /* 게임 스타일 폰트 */
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 
   body {
-    @apply min-w-[320px] min-h-screen relative m-0 bg-gray-50 text-gray-900;
+    @apply min-w-[320px] min-h-screen relative m-0 text-gray-100;
+    /* 다크 그라데이션 배경 */
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+    background-attachment: fixed;
     /* 부드러운 스크롤 */
     scroll-behavior: smooth;
     /* 안티앨리어싱 */
@@ -16,28 +19,46 @@
     -moz-osx-font-smoothing: grayscale;
   }
   
-  /* 토스 스타일 버튼 애니메이션 */
+  /* 게임 스타일 버튼 애니메이션 */
   button {
     @apply transition-all duration-200;
   }
   
-  button:active {
-    @apply scale-95;
+  button:hover {
+    @apply brightness-110;
   }
   
-  /* 토스 스타일 인풋 */
+  button:active {
+    @apply scale-95 brightness-90;
+  }
+  
+  /* 게임 스타일 인풋 */
   input:focus {
-    @apply outline-none ring-2 ring-blue-500;
+    @apply outline-none ring-2 ring-cyan-500;
   }
 }
 
-/* 토스 스타일 미묘한 배경 패턴 */
+/* 게임 스타일 배경 패턴 */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
+  background-image: 
+    linear-gradient(rgba(6, 182, 212, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(6, 182, 212, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: grid-move 20s linear infinite;
+}
+
+@keyframes grid-move {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 50px 50px;
+  }
 }
 
 @keyframes slide {
@@ -67,8 +88,56 @@ body::before {
   }
 }
 
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.8);
+  }
+}
+
+@keyframes border-glow {
+  0%, 100% {
+    border-color: rgba(6, 182, 212, 0.5);
+  }
+  50% {
+    border-color: rgba(6, 182, 212, 1);
+  }
+}
+
 .animate-shimmer {
   animation: shimmer 2s infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+.animate-border-glow {
+  animation: border-glow 2s ease-in-out infinite;
+}
+
+/* 글로우 효과 유틸리티 */
+.glow-cyan {
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+}
+
+.glow-blue {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+.glow-purple {
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+}
+
+.glow-red {
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+}
+
+/* 각진 디자인 요소 */
+.clip-corner {
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
 }
 
 @media (prefers-reduced-motion) {
